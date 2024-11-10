@@ -1,0 +1,7 @@
+{
+    "printWidth": 145,
+    "arrowParens": "avoid",
+    "trailingComma": "es5",
+    "proseWrap": "never",
+    "plugins": ["prettier-plugin-tailwindcss"]
+}

@@ -1,0 +1,143 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+model User {
+    id            String    @id @default(cuid())
+    name          String?
+    email         String    @unique
+    emailVerified DateTime?
+    image         String?
+    role          Role      @default(USER)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    accounts  Account[]
+    sessions  Session[]
+    Product   Product[]
+    cartItems CartProduct[]
+}
+
+model Product {
+    id           String        @id @default(cuid())
+    productTitle String
+    description  String
+    image        String?
+    price        Int
+    createdById  String
+    status       Status
+    category     Category
+    tag          Tag
+    color        Color
+    cartProduct  CartProduct[]
+    review       Review[]
+
+    createdBy User @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+    @@index([category])
+}
+
+model Review {
+    id        String   @id @default(cuid())
+    text      String
+    date      DateTime @default(now())
+    name      String
+    rate      Int
+    productId String
+
+    Product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model CartProduct {
+    id        String @id @default(cuid())
+    userId    String
+    productId String
+
+    Product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+    User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?
+    access_token      String?
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String?
+    session_state     String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@id([provider, providerAccountId])
+}
+
+model Session {
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+    identifier String
+    token      String
+    expires    DateTime
+
+    @@id([identifier, token])
+}
+
+enum Role {
+    USER
+    ADMIN
+}
+
+enum Color {
+    Black
+    White
+    Red
+    Brown
+    Green
+}
+
+enum Category {
+    Chair
+    Table
+    Lamp
+    Drawer
+    Bed
+    Bookshelf
+    Sofa
+}
+
+enum Tag {
+    Minimalistic
+    Modern
+    Stylish
+    Elegant
+    Ambient
+    Luxurious
+}
+
+enum Status {
+    Regular
+    New
+    Popular
+    Out_of_stock
+}
