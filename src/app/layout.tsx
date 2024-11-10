@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/mode/themeProvider";
 import { fileRouter } from "./api/uploadthing/core";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "../styles/fonts/GeistVF.woff",
@@ -38,13 +39,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} prose lg:prose-xl antialiased`}>
         <QueryProvider>
           <ThemeProvider>
             <Suspense>
               <UTSSR />
             </Suspense>
             {children}
+            <Toaster />
           </ThemeProvider>
         </QueryProvider>
       </body>

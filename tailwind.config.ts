@@ -1,5 +1,8 @@
+/* eslint-disable */
+
 import type { Config } from "tailwindcss";
 import { withUt } from "uploadthing/tw";
+const { default: flattenColorPalette } = require("tailwindcss/lib/util/flattenColorPalette");
 
 export default withUt({
   darkMode: ["class"],
@@ -55,6 +58,14 @@ export default withUt({
       },
     },
   },
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography"), addVariablesForColors],
 }) satisfies Config;
+
+function addVariablesForColors({ addBase, theme }: { addBase: ({}) => void; theme: ({}) => void }) {
+  let allColors = flattenColorPalette(theme("colors"));
+  let newVars = Object.fromEntries(Object.entries(allColors).map(([key, val]) => [`--${key}`, val]));
+
+  addBase({
+    ":root": newVars,
+  });
+}
